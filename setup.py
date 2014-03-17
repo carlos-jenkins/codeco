@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+from setuptools import setup
+
+setup(
+    name='codeco',
+    version='1.0',
+    description='Universal code annotator Pygments and reStructuredText.',
+    author='Carlos Jenkins',
+    author_email='carlos@jenkins.co.cr',
+    url='http://codeco.readthedocs.org/',
+    packages=['codeco'],
+    package_dir={'': 'lib'},
+    classifiers=[
+        'License :: OSI Approved :: Apache Software License',
+    ],
+    test_suite='test',
+    setup_requires=[
+        'flake8'
+    ]
+)
