@@ -31,6 +31,21 @@ default_tpl = """\
     <title>{title}</title>
 
     <style type="text/css">
+    body {{
+        margin: 0;
+        padding: 10px;
+        background-color: lightsteelblue;
+    }}
+    #wrapper {{
+        border: 1px solid lightgray;
+        width: 80%;
+        margin: auto;
+        padding: 10px 20px;
+        background-color: white;
+    }}
+    </style>
+
+    <style type="text/css">
     {style}
     </style>
 
@@ -39,8 +54,10 @@ default_tpl = """\
     </script>
 </head>
 <body>
+<div id="wrapper">
 {annotations}
 {code}
+</div>
 </body>
 </html>
 """
@@ -64,12 +81,11 @@ class Processor(object):
             self, codefn, annfn,
             title='', tpl=None, out_file=None, **kwargs):
 
-        if tpl is None:
-            tpl = default_tpl
-
         processed = self.process_files(codefn, annfn, **kwargs)
         processed['title'] = title
 
+        if tpl is None:
+            tpl = default_tpl
         document = tpl.format(**processed)
 
         # Warning: might raise IO exceptions
