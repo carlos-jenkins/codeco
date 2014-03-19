@@ -20,7 +20,31 @@ Main processing module.
 import re
 
 from markdown import markdown
-from pygments import lexers, highlight
+from pygments import lexers, highlight, formatters
+from BeautifulSoup import BeautifulSoup
+
+
+default_tpl = """\
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{title}</title>
+
+    <style type="text/css">
+    {style}
+    </style>
+
+    <script type="text/javascript">
+    {script}
+    </script>
+</head>
+<body>
+{annotations}
+{code}
+</body>
+</html>
+"""
 
 
 class Processor(object):
@@ -35,7 +59,26 @@ class Processor(object):
 
     def render_rest(self, body):
         # FIXME Implement
-        raise NotImplementedError('renderer')
+        raise NotImplementedError('reStructuredText')
+
+    def create_document(
+            self, codefn, annfn,
+            title='', tpl=None, out_file=None, **kwargs):
+
+        if tpl is None:
+            tpl = default_tpl
+
+        processed = self.process_files(codefn, annfn, **kwargs)
+        processed['title'] = title
+
+        #document = BeautifulSoup(tpl.format(**processed)).prettify()
+        document = tpl.format(**processed)
+
+        if out_file is not None:
+            with open(out_file, 'w') as of:
+                of.write(document)
+
+        return document
 
     def process_files(self, codefn, annfn, **kwargs):
         with open(codefn, 'r') as cf:
@@ -93,19 +136,19 @@ class Processor(object):
                 '</div>',
             ])
             rendered_anns.append(render)
-        renderered_anns.append('</div>')
+        rendered_anns.append('</div>')
 
         # Highlight code
         options = {
             'linenos'  : 'table',
             'linespans': prefix + 'line'
         }
-        formatter = HtmlFormatter(**options)
+        formatter = formatters.HtmlFormatter(**options)
         highlighted = highlight(code, lexer, formatter)
 
         return {
-            'code'        : highlighted,
-            'annotations' : '\n'.join(rendered_anns),
             'style'       : formatter.get_style_defs('table.highlighttable'),
-            'script'      : ''
+            'script'      : '',
+            'annotations' : '\n'.join(rendered_anns),
+            'code'        : highlighted,
         }
