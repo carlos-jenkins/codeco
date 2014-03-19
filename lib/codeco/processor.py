@@ -21,7 +21,6 @@ import re
 
 from markdown import markdown
 from pygments import lexers, highlight, formatters
-from BeautifulSoup import BeautifulSoup
 
 
 default_tpl = """\
@@ -71,9 +70,9 @@ class Processor(object):
         processed = self.process_files(codefn, annfn, **kwargs)
         processed['title'] = title
 
-        #document = BeautifulSoup(tpl.format(**processed)).prettify()
         document = tpl.format(**processed)
 
+        # Warning: might raise IO exceptions
         if out_file is not None:
             with open(out_file, 'w') as of:
                 of.write(document)
@@ -81,6 +80,7 @@ class Processor(object):
         return document
 
     def process_files(self, codefn, annfn, **kwargs):
+        # Warning: might raise IO exceptions
         with open(codefn, 'r') as cf:
             code = cf.read()
         with open(annfn, 'r') as af:
