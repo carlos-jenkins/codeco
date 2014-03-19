@@ -18,6 +18,8 @@ Main processing module.
 """
 
 import re
+from json import dumps
+
 
 from markdown import markdown
 from pygments import lexers, highlight, formatters
@@ -49,6 +51,7 @@ default_tpl = """\
     {style}
     </style>
 
+    <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
     <script type="text/javascript">
     {script}
     </script>
@@ -60,6 +63,21 @@ default_tpl = """\
 </div>
 </body>
 </html>
+"""
+
+interact_script = """\
+$(window).load(function () {
+    var annotations = $('div.annotation');
+
+    annotations.hover(
+        function() {
+            $(this).addClass('hover');
+        },
+        function() {
+            $(this).removeClass('hover');
+        }
+    );
+});
 """
 
 
@@ -145,7 +163,9 @@ class Processor(object):
             body = '\n'.join(lines)
             render = '\n'.join([
                 '<div class="annotation">',
-                '<span><pre>{}</pre></span>'.format(str(meta)),  # FIXME
+                '<span style="display: none;" class="data">{}</span>'.format(
+                    dumps(meta)
+                ),
                 '<div class="annotation_body">',
                 renderer(body),
                 '</div>',
@@ -164,7 +184,7 @@ class Processor(object):
 
         return {
             'style'       : formatter.get_style_defs('table.highlighttable'),
-            'script'      : '',
+            'script'      : interact_script,
             'annotations' : '\n'.join(rendered_anns),
             'code'        : highlighted,
         }
