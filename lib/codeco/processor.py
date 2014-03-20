@@ -78,6 +78,10 @@ $(window).load(function () {
         function() {
             $(this).addClass('hover');
             $(this).children().slideDown(speed);
+            var meta = jQuery.parseJSON($(this).siblings('.data').text());
+            if (meta.args != null) {
+                $('#line-' + meta.args).css('background-color', '#FF0000');
+            }
         },
         function() {
             $(this).removeClass('hover');
