@@ -67,14 +67,21 @@ default_tpl = """\
 
 interact_script = """\
 $(window).load(function () {
-    var annotations = $('div.annotation');
 
-    annotations.hover(
+    // Hide annotations non title elements
+    $('.annotation_body *:first-child').addClass('ann_title');
+    $('.annotation_body > *:gt(1)').hide();
+
+    var speed = 150;
+
+    $('div.annotation_body').hover(
         function() {
             $(this).addClass('hover');
+            $(this).children().slideDown(speed);
         },
         function() {
             $(this).removeClass('hover');
+            $(this).children('*:not(.ann_title)').slideUp(speed);
         }
     );
 });
