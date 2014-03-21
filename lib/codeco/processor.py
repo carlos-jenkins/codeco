@@ -219,9 +219,11 @@ class Processor(object):
         }
         formatter = formatters.HtmlFormatter(**options)
         highlighted = highlight(code, lexer, formatter)
+        style = formatter.get_style_defs('table.highlighttable') + \
+            '\ntable.highlighttable .hll { display: block; }'
 
         return {
-            'style'       : formatter.get_style_defs('table.highlighttable'),
+            'style'       : style,
             'script'      : interact_script,
             'annotations' : '\n'.join(rendered_anns),
             'code'        : highlighted,
