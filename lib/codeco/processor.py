@@ -45,6 +45,19 @@ default_tpl = """\
         padding: 10px 20px;
         background-color: white;
     }}
+    #two-columns {{
+        width: 80%;
+        margin: 0 auto;
+    }}
+    #left-col {{
+        float: left;
+    }}
+    #right-col {{
+        float: left;
+    }}
+    .no-float {{
+        clear: both;
+    }}
     </style>
 
     <style type="text/css">
@@ -58,8 +71,15 @@ default_tpl = """\
 </head>
 <body>
 <div id="wrapper">
-{annotations}
-{code}
+    <div id="two-columns">
+        <div id="left-col">
+            {code}
+        </div>
+        <div id="right-col">
+            {annotations}
+        </div>
+    </div>
+    <div class="no-float"></div>
 </div>
 </body>
 </html>
