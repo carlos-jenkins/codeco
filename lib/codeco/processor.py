@@ -89,30 +89,23 @@ interact_script = """\
 $(window).load(function () {
 
     // Hide annotations non title elements
-    $('.annotation_body').children(':lt(2)').addClass('ann_title');
+    $('.annotation_body > *:lt(2)').addClass('ann_title');
     $('.annotation_body > *:gt(1)').hide();
 
     var speed = 150;
 
-    function markline(elem) {
-        $(elem).toggleClass('hover');
-        $(elem).children('*:not(.ann_title)').slideToggle(speed);
+    function show_annotation() {
+        $(this).toggleClass('hover');
+        $(this).children('*:not(.ann_title)').slideToggle(speed);
 
-        var meta = jQuery.parseJSON($(elem).siblings('.data').text());
+        var meta = jQuery.parseJSON($(this).siblings('.data').text());
         if (meta.args != null) {
             $('#' + meta.prefix + 'line-' + meta.args).toggleClass('hll');
         }
 
     }
 
-    $('div.annotation_body').hover(
-        function() {
-            markline(this);
-        },
-        function() {
-            markline(this);
-        }
-    );
+    $('div.annotation_body').hover(show_annotation, show_annotation);
 });
 """
 
