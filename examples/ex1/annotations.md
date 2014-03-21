@@ -1,8 +1,8 @@
-<[annotation]> line 1
+<[annotation]> 1
 
 This is the first annotation.
 
-<[annotation]> line 5
+<[annotation]> 5 10
 
 This is the second annotation.
 

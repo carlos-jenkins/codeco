@@ -100,9 +100,12 @@ $(window).load(function () {
 
         var meta = jQuery.parseJSON($(this).siblings('.data').text());
         if (meta.args != null) {
-            $('#' + meta.prefix + 'line-' + meta.args).toggleClass('hll');
+            for (var i = 0; i < meta.args.length; i++) {
+                $('#' + meta.prefix + 'line-' + meta.args[i]).toggleClass(
+                    'hll hll-line'
+                );
+            }
         }
-
     }
 
     $('div.annotation_body').hover(show_annotation, show_annotation);
@@ -112,9 +115,7 @@ $(window).load(function () {
 
 class Processor(object):
 
-    ann_regex = \
-        r'^<\[annotation\]> *?' \
-        r'((?P<option>(line|chars))? *?(?P<args>[0-9,]+)?)? *?$'
+    ann_regex = r'^<\[annotation\]> *?(?P<args>[0-9\[\] ]+)? *?$'
     ann_re = re.compile(ann_regex)
 
     def render_markdown(self, body):
@@ -181,12 +182,19 @@ class Processor(object):
                 continue
 
             if current is not None:
-                parsed_anns.append((current, buff))
-            current = m.groupdict()
+                parsed_anns.append(
+                    (current, '\n'.join(buff))
+                )
+            current = {'args' : None}
+            args = m.groupdict()['args']
+            if args is not None:
+                current['args'] = args.strip().split(' ')
             buff = []
 
         if buff:
-            parsed_anns.append((current, buff))
+            parsed_anns.append(
+                (current, '\n'.join(buff))
+            )
 
         # Render annotations
         renderers = {
@@ -196,9 +204,8 @@ class Processor(object):
         renderer = renderers[ann_format]
 
         rendered_anns = ['<div class="annotations">']
-        for meta, lines in parsed_anns:
+        for meta, body in parsed_anns:
             meta['prefix'] = prefix
-            body = '\n'.join(lines)
             render = '\n'.join([
                 '<div class="annotation">',
                 '<span style="display: none;" class="data">{}</span>'.format(
@@ -220,7 +227,7 @@ class Processor(object):
         formatter = formatters.HtmlFormatter(**options)
         highlighted = highlight(code, lexer, formatter)
         style = formatter.get_style_defs('table.highlighttable') + \
-            '\ntable.highlighttable .hll { display: block; }'
+            '\ntable.highlighttable .hll-line { display: block; }'
 
         return {
             'style'       : style,
