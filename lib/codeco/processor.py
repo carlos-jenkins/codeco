@@ -20,9 +20,9 @@ Main processing module.
 import re
 from json import dumps
 
-
-from markdown import markdown
 from pygments import lexers, highlight, formatters
+from markdown import markdown
+from docutils.core import publish_parts
 
 
 default_tpl = """\
@@ -89,7 +89,7 @@ interact_script = """\
 $(window).load(function () {
 
     // Hide annotations non title elements
-    $('.annotation_body *:first-child').addClass('ann_title');
+    $('.annotation_body').children(':lt(2)').addClass('ann_title');
     $('.annotation_body > *:gt(1)').hide();
 
     var speed = 150;
@@ -123,8 +123,17 @@ class Processor(object):
         return markdown(body, output_format='html4')  # Same as Pygments
 
     def render_rest(self, body):
-        # FIXME Implement
-        raise NotImplementedError('reStructuredText')
+        overrides = {
+            'doctitle_xform': False,
+            'initial_header_level': 1
+        }
+        parts = publish_parts(
+            source=body,
+            writer_name='html',
+            settings_overrides=overrides
+        )
+        print([l for l in parts])
+        return parts['body']
 
     def create_document(
             self, codefn, annfn,
@@ -154,7 +163,7 @@ class Processor(object):
 
     def process(
             self, code, annotations,
-            codefn=None, ann_format='markdown', prefix=''):
+            codefn=None, ann_format='rest', prefix=''):
 
         # Guess programming language
         # Warning: might raise pygments.util.ClassNotFound
