@@ -161,7 +161,7 @@ class Processor(object):
 
     def process(
             self, code, annotations,
-            codefn=None, ann_format='rest', prefix=''):
+            codefn=None, ann_format='rest', prefix='', codestyle='monokai'):
 
         # Guess programming language
         # Warning: might raise pygments.util.ClassNotFound
@@ -221,6 +221,7 @@ class Processor(object):
 
         # Highlight code
         options = {
+            'style'    : codestyle,
             'linenos'  : 'table',
             'linespans': prefix + 'line',
         }
