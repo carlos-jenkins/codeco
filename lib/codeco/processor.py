@@ -94,18 +94,23 @@ $(window).load(function () {
 
     var speed = 150;
 
+    function markline(elem) {
+        $(elem).toggleClass('hover');
+        $(elem).children('*:not(.ann_title)').slideToggle(speed);
+
+        var meta = jQuery.parseJSON($(elem).siblings('.data').text());
+        if (meta.args != null) {
+            $('#' + meta.prefix + 'line-' + meta.args).toggleClass('hll');
+        }
+
+    }
+
     $('div.annotation_body').hover(
         function() {
-            $(this).addClass('hover');
-            $(this).children().slideDown(speed);
-            var meta = jQuery.parseJSON($(this).siblings('.data').text());
-            if (meta.args != null) {
-                $('#line-' + meta.args).css('background-color', '#FF0000');
-            }
+            markline(this);
         },
         function() {
-            $(this).removeClass('hover');
-            $(this).children('*:not(.ann_title)').slideUp(speed);
+            markline(this);
         }
     );
 });
@@ -132,7 +137,6 @@ class Processor(object):
             writer_name='html',
             settings_overrides=overrides
         )
-        print([l for l in parts])
         return parts['body']
 
     def create_document(
@@ -200,6 +204,7 @@ class Processor(object):
 
         rendered_anns = ['<div class="annotations">']
         for meta, lines in parsed_anns:
+            meta['prefix'] = prefix
             body = '\n'.join(lines)
             render = '\n'.join([
                 '<div class="annotation">',
@@ -217,7 +222,7 @@ class Processor(object):
         # Highlight code
         options = {
             'linenos'  : 'table',
-            'linespans': prefix + 'line'
+            'linespans': prefix + 'line',
         }
         formatter = formatters.HtmlFormatter(**options)
         highlighted = highlight(code, lexer, formatter)
