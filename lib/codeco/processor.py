@@ -77,10 +77,10 @@ default_tpl = """\
 <div id="wrapper">
     <div id="two-columns">
         <div id="left-col">
-            {code}
+            {annotations}
         </div>
         <div id="right-col">
-            {annotations}
+            {code}
         </div>
     </div>
     <div class="no-float"></div>
@@ -122,14 +122,17 @@ class Processor(object):
     ann_regex = r'^<\[annotation\]> *?(?P<args>[0-9\[\] ]+)? *?$'
     ann_re = re.compile(ann_regex)
 
-    def render_markdown(self, body):
-        return markdown(body, output_format='html4')  # Same as Pygments
+    def render_markdown(self, body, **kwargs):
+        # Same as Pygments
+        kwargs['output_format'] = 'html4'
+        return markdown(body, **kwargs)
 
-    def render_rest(self, body):
+    def render_rest(self, body, **kwargs):
         overrides = {
             'doctitle_xform': False,
             'initial_header_level': 1
         }
+        overrides.update(kwargs)
         parts = publish_parts(
             source=body,
             writer_name='html',
@@ -165,7 +168,12 @@ class Processor(object):
 
     def process(
             self, code, annotations,
-            codefn=None, ann_format='rest', prefix='', codestyle='monokai'):
+            codefn=None, ann_format='rest',
+            prefix='', codestyle='monokai',
+            renderer_opts=None):
+
+        if renderer_opts is None:
+            renderer_opts = {}
 
         # Guess programming language
         # Warning: might raise pygments.util.ClassNotFound
@@ -216,7 +224,7 @@ class Processor(object):
                     dumps(meta)
                 ),
                 '<div class="annotation_body">',
-                renderer(body),
+                renderer(body, **renderer_opts),
                 '</div>',
                 '</div>',
             ])
