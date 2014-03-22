@@ -58,6 +58,10 @@ default_tpl = """\
     .no-float {{
         clear: both;
     }}
+    .annotations {{
+        padding: 5px 20px 10px 20px;
+        font-family: DejaVu Sans, Verdana, sans-serif;
+    }}
     </style>
 
     <style type="text/css">
