@@ -93,8 +93,8 @@ interact_script = """\
 $(window).load(function () {
 
     // Hide annotations non title elements
-    $('.annotation_body > *:lt(2)').addClass('ann_title');
-    $('.annotation_body > *:gt(1)').hide();
+    $('div.annotation_body').children(':first-child').addClass('ann_title');
+    $('div.annotation_body').children(':not(.ann_title)').hide();
 
     var speed = 150;
 

@@ -1,7 +1,6 @@
 <[annotation]> 1
 
 1. Install ``pip``
-==================
 
 For Python 3 install package ``python3-pip``.
 
