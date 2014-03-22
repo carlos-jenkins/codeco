@@ -17,5 +17,6 @@ setup(
     test_suite='test',
     setup_requires=[
         'flake8'
-    ]
+    ],
+    install_requires=['pygments>=1.6', 'markdown', ],
 )
