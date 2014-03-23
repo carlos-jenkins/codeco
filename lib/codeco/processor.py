@@ -140,7 +140,7 @@ class Processor(object):
     Regular expression used to find annotations.
     """
     ann_regex = \
-        r'^<\[annotation\]> *?(?P<args>[0-9]+(\[[0-9]+, *[0-9]+\])?)? *?$'
+        r'^<\[annotation\]>(?P<args>[0-9, \[\]]+)? *?$'
     ann_re = re.compile(ann_regex)
 
     def _parse_annotations(self, annotations, prefix):
