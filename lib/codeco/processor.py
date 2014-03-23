@@ -139,6 +139,37 @@ class Processor(object):
     ann_regex = r'^<\[annotation\]> *?(?P<args>[0-9\[\] ]+)? *?$'
     ann_re = re.compile(ann_regex)
 
+    def _parse_annotations(self, annotations, prefix):
+        current = None
+        buff = []
+        parsed_anns = []
+
+        for line in annotations.splitlines():
+            m = Processor.ann_re.match(line)
+            if not m:
+                buff.append(line)
+                continue
+
+            if current is not None:
+                parsed_anns.append(
+                    (current, '\n'.join(buff))
+                )
+            current = {
+                'args' : None,
+                'prefix' : prefix
+            }
+            args = m.groupdict()['args']
+            if args is not None:
+                current['args'] = args.strip().split(' ')
+            buff = []
+
+        if buff:
+            parsed_anns.append(
+                (current, '\n'.join(buff))
+            )
+
+        return parsed_anns
+
     def _render_markdown(self, body, **kwargs):
         # Same as Pygments
         kwargs['output_format'] = 'html4'
@@ -199,44 +230,13 @@ class Processor(object):
             for child in wrapper.children:
                 if add_class(child, 'annotation_title'):
                     break
-            html = str(wrapper)
+            body = str(wrapper)
 
             rendered_anns.append(
-                annotation_tpl.format(json=dumps(meta), body=html)
+                annotation_tpl.format(json=dumps(meta), body=body)
             )
 
         return rendered_anns
-
-    def _parse_annotations(self, annotations, prefix):
-        current = None
-        buff = []
-        parsed_anns = []
-
-        for line in annotations.splitlines():
-            m = Processor.ann_re.match(line)
-            if not m:
-                buff.append(line)
-                continue
-
-            if current is not None:
-                parsed_anns.append(
-                    (current, '\n'.join(buff))
-                )
-            current = {
-                'args' : None,
-                'prefix' : prefix
-            }
-            args = m.groupdict()['args']
-            if args is not None:
-                current['args'] = args.strip().split(' ')
-            buff = []
-
-        if buff:
-            parsed_anns.append(
-                (current, '\n'.join(buff))
-            )
-
-        return parsed_anns
 
     def _generate_prefix(self, lenght=10):
         """
