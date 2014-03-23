@@ -25,7 +25,7 @@ from hashlib import sha1
 from pygments import lexers, highlight, formatters
 from markdown import markdown
 from docutils.core import publish_parts
-#from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 
 
 default_tpl = """\
@@ -96,6 +96,15 @@ default_tpl = """\
 </html>
 """
 
+
+annotation_tpl = """\
+<div class="annotation">
+    <span style="display: none;" class="data">{json}</span>
+    {body}
+</div>
+"""
+
+
 interact_script = """\
 $(window).load(function () {
 
@@ -132,7 +141,7 @@ class Processor(object):
     def _render_markdown(self, body, **kwargs):
         # Same as Pygments
         kwargs['output_format'] = 'html4'
-        return markdown(body, **kwargs)
+        return markdown(body, **kwargs).strip()
 
     def _render_rest(self, body, **kwargs):
         overrides = {
@@ -145,29 +154,39 @@ class Processor(object):
             writer_name='html',
             settings_overrides=overrides
         )
-        return parts['body']
+        return parts['body'].strip()
 
     def _render(self, parsed_anns, ann_format, renderer_opts):
+        # Get renderer
         renderers = {
             'markdown' : self._render_markdown,
             'rest'     : self._render_rest,
         }
         renderer = renderers[ann_format]
 
+        # Render annotations
         rendered_anns = ['<div class="annotations">']
-        for meta, body in parsed_anns:
+        for meta, ann_body in parsed_anns:
 
-            render = '\n'.join([
-                '<div class="annotation">',
-                '<span style="display: none;" class="data">{}</span>'.format(
-                    dumps(meta)
-                ),
-                '<div class="annotation_body">',
-                renderer(body, **renderer_opts),
-                '</div>',
-                '</div>',
-            ])
-            rendered_anns.append(render)
+            html = renderer(ann_body, **renderer_opts)
+
+            # Wrap rendered annotation
+            body = BeautifulSoup(html, 'html.parser')
+            if len(body) == 1 and body.contents[0].name == 'div':
+                # Already wrapped
+                body.contents[0].attrs['class'] += [' annotation_body']
+                html = str(body)
+            else:
+                # Wrap into a div
+                wrapper = body.new_tag('div')
+                wrapper.attrs['class'] = 'annotation_body'
+                for elem in body.children:
+                    wrapper.append(elem)
+                html = str(wrapper)
+
+            rendered_anns.append(
+                annotation_tpl.format(json=dumps(meta), body=html)
+            )
         rendered_anns.append('</div>')
 
         return rendered_anns
