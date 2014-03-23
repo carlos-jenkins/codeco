@@ -122,9 +122,15 @@ $(window).load(function () {
         var meta = jQuery.parseJSON($(this).siblings('.data').text());
         if (meta.args != null) {
             for (var i = 0; i < meta.args.length; i++) {
-                $('#' + meta.prefix + 'line-' + meta.args[i]).toggleClass(
-                    'hll hll-line'
-                );
+                var arg = meta.args[i];
+                if (arg.beg == null) {
+                    $('#' + meta.prefix + 'line-' + arg.line).toggleClass(
+                        'hll hll-line'
+                    );
+                } else {
+                    // FIXME Implement characters highlight.
+                    alert(arg.beg + '->' + arg.end);
+                }
             }
         }
     }
