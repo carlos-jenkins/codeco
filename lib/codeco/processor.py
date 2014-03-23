@@ -25,7 +25,7 @@ from hashlib import sha1
 from pygments import lexers, highlight, formatters
 from markdown import markdown
 from docutils.core import publish_parts
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 
 default_tpl = """\
@@ -84,7 +84,9 @@ default_tpl = """\
 <div id="wrapper">
     <div id="two-columns">
         <div id="left-col">
-            {annotations}
+            <div class="annotations">
+                {annotations}
+            </div>
         </div>
         <div id="right-col">
             {code}
@@ -109,14 +111,13 @@ interact_script = """\
 $(window).load(function () {
 
     // Hide annotations non title elements
-    $('div.annotation_body').children(':first-child').addClass('ann_title');
-    $('div.annotation_body').children(':not(.ann_title)').hide();
+    $('div.annotation_body').children(':not(.annotation_title)').hide();
 
     var speed = 150;
 
     function show_annotation() {
         $(this).toggleClass('hover');
-        $(this).children('*:not(.ann_title)').slideToggle(speed);
+        $(this).children('*:not(.annotation_title)').slideToggle(speed);
 
         var meta = jQuery.parseJSON($(this).siblings('.data').text());
         if (meta.args != null) {
@@ -141,7 +142,7 @@ class Processor(object):
     def _render_markdown(self, body, **kwargs):
         # Same as Pygments
         kwargs['output_format'] = 'html4'
-        return markdown(body, **kwargs).strip()
+        return markdown(body, **kwargs)
 
     def _render_rest(self, body, **kwargs):
         overrides = {
@@ -154,7 +155,7 @@ class Processor(object):
             writer_name='html',
             settings_overrides=overrides
         )
-        return parts['body'].strip()
+        return parts['body']
 
     def _render(self, parsed_anns, ann_format, renderer_opts):
         # Get renderer
@@ -164,30 +165,45 @@ class Processor(object):
         }
         renderer = renderers[ann_format]
 
+        def add_class(elem, html_class):
+            """
+            Helper to safely add a class to a Tag object.
+            """
+            if not isinstance(elem, Tag):
+                return False
+            if 'class' in elem:
+                elem.attrs['class'] += [html_class]
+            else:
+                elem.attrs['class'] = html_class
+            return True
+
         # Render annotations
-        rendered_anns = ['<div class="annotations">']
+        rendered_anns = []
         for meta, ann_body in parsed_anns:
 
-            html = renderer(ann_body, **renderer_opts)
+            html = renderer(ann_body, **renderer_opts).strip()
 
             # Wrap rendered annotation
-            body = BeautifulSoup(html, 'html.parser')
-            if len(body) == 1 and body.contents[0].name == 'div':
+            bs = BeautifulSoup(html)
+            elements = bs.body.contents
+            if len(elements) == 1 and elements[0].name == 'div':
                 # Already wrapped
-                body.contents[0].attrs['class'] += [' annotation_body']
-                html = str(body)
+                wrapper = elements[0]
             else:
                 # Wrap into a div
-                wrapper = body.new_tag('div')
-                wrapper.attrs['class'] = 'annotation_body'
-                for elem in body.children:
+                wrapper = bs.new_tag('div')
+                for elem in elements:
                     wrapper.append(elem)
-                html = str(wrapper)
+            add_class(wrapper, 'annotation_body')
+
+            for child in wrapper.children:
+                if add_class(child, 'annotation_title'):
+                    break
+            html = str(wrapper)
 
             rendered_anns.append(
                 annotation_tpl.format(json=dumps(meta), body=html)
             )
-        rendered_anns.append('</div>')
 
         return rendered_anns
 
