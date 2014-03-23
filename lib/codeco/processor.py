@@ -143,6 +143,43 @@ class Processor(object):
         r'^<\[annotation\]>(?P<args>[0-9, \[\]]+)? *?$'
     ann_re = re.compile(ann_regex)
 
+    args_regex = \
+        r'^(?P<line>[0-9]+)(\[(?P<beg>[0-9]+),(?P<end>[0-9]+)\])?$'
+    args_re = re.compile(args_regex)
+
+    def _parse_args(self, args, num):
+        """
+        Parse a string with line arguments to a list of dictionaries. Returns
+        a list of dictionaries of the type:
+        ```
+        [
+            {'line': '1', 'end': None, 'beg': None},
+            {'line': '10', 'end': '20', 'beg': '0'},
+            {'line': '20', 'end': '10', 'beg': '5'},
+        ]
+        ```
+
+        :param str args: A string with line arguments of the type:
+         ``1 10[0,20] 20[5,10]``.
+        :param str num: Line number, useful for warning messages when the
+         parsing fails.
+        """
+        parsed = []
+        for token in args.strip().split():
+
+            m = Processor.args_re.match(token)
+            if not m:
+                print(
+                    '** WARNING: Unable to parse token "{}" '
+                    'in line #{}.'.format(
+                        token, num
+                    )
+                )
+                continue
+            parsed.append(m.groupdict())
+
+        return parsed
+
     def _parse_annotations(self, annotations, prefix):
         """
         Parse annotations from a string.
@@ -158,7 +195,7 @@ class Processor(object):
         buff = []
         parsed_anns = []
 
-        for line in annotations.splitlines():
+        for num, line in enumerate(annotations.splitlines(), 1):
             m = Processor.ann_re.match(line)
             if not m:
                 buff.append(line)
@@ -174,7 +211,7 @@ class Processor(object):
             }
             args = m.groupdict()['args']
             if args is not None:
-                current['args'] = args.strip().split(' ')
+                current['args'] = self._parse_args(args, num)
             buff = []
 
         if buff:
