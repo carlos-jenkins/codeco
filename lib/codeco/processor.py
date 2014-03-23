@@ -182,7 +182,16 @@ class Processor(object):
                     )
                 )
                 continue
-            parsed.append(m.groupdict())
+
+            # Map datatypes
+            mapped = {}
+            for k, v in m.groupdict().items():
+                if v is not None:
+                    mapped[k] = int(v)
+                    continue
+                mapped[k] = None
+
+            parsed.append(mapped)
 
         return parsed
 
