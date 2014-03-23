@@ -117,14 +117,16 @@ $(window).load(function () {
 
     function show_annotation() {
         $(this).toggleClass('hover');
-        $(this).children('*:not(.annotation_title)').slideToggle(speed);
-
         var meta = jQuery.parseJSON($(this).siblings('.data').text());
+        if (meta.hide) {
+            $(this).children('*:not(.annotation_title)').slideToggle(speed);
+        }
         if (meta.args != null) {
             for (var i = 0; i < meta.args.length; i++) {
                 var arg = meta.args[i];
+                var line = $('#' + meta.prefix + 'line-' + arg.line);
                 if (arg.beg == null) {
-                    $('#' + meta.prefix + 'line-' + arg.line).toggleClass(
+                    line.toggleClass(
                         'hll hll-line'
                     );
                 } else {
@@ -219,7 +221,8 @@ class Processor(object):
                 )
             current = {
                 'args' : None,
-                'prefix' : prefix
+                'prefix' : prefix,
+                'hide' : True,  # XXX Make it a parameter
             }
             args = m.groupdict()['args']
             if args is not None:
