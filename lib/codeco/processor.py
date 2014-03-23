@@ -110,10 +110,15 @@ annotation_tpl = """\
 interact_script = """\
 $(window).load(function () {
 
-    // Hide annotations non title elements
-    $('div.annotation_body').children(':not(.annotation_title)').hide();
-
     var speed = 300;
+
+    // Hide non title elements for annotations that require it.
+    $('div.annotation_body').each(function () {
+        var meta = jQuery.parseJSON($(this).siblings('.data').text());
+        if (meta.hide) {
+            $(this).children('*:not(.annotation_title)').hide();
+        }
+    });
 
     function show_annotation() {
         $(this).toggleClass('hover');
