@@ -113,7 +113,7 @@ $(window).load(function () {
     // Hide annotations non title elements
     $('div.annotation_body').children(':not(.annotation_title)').hide();
 
-    var speed = 150;
+    var speed = 300;
 
     function show_annotation() {
         $(this).toggleClass('hover');
@@ -136,11 +136,24 @@ $(window).load(function () {
 
 class Processor(object):
 
+    """
+    Regular expression used to find annotations.
+    """
     ann_regex = \
-        r'^<\[annotation\]> *?(?P<args>[0-9]+(\[[0-9]+,[0-9]+\])?)? *?$'
+        r'^<\[annotation\]> *?(?P<args>[0-9]+(\[[0-9]+, *[0-9]+\])?)? *?$'
     ann_re = re.compile(ann_regex)
 
     def _parse_annotations(self, annotations, prefix):
+        """
+        Parse annotations from a string.
+
+        This method allows to split a large string containing annotations and
+        returns a list of tuples with (dictionary, annotation).
+
+        :param str annotations: String with annotations.
+        :param str prefix: Prefix to be used for this annotated code.
+        """
+
         current = None
         buff = []
         parsed_anns = []
@@ -172,11 +185,22 @@ class Processor(object):
         return parsed_anns
 
     def _render_markdown(self, body, **kwargs):
-        # Same as Pygments
-        kwargs['output_format'] = 'html4'
+        """
+        Render given Markdown formatted body to HTML.
+
+        :param str body: String with Markdown.
+        """
+
+        kwargs['output_format'] = 'html4'  # Same as Pygments
         return markdown(body, **kwargs)
 
     def _render_rest(self, body, **kwargs):
+        """
+        Render given reStructuredText formatted body to HTML.
+
+        :param str body: String with reStructuredText.
+        """
+
         overrides = {
             'doctitle_xform': False,
             'initial_header_level': 1
@@ -190,6 +214,16 @@ class Processor(object):
         return parts['body']
 
     def _render(self, parsed_anns, ann_format, renderer_opts):
+        """
+        Render to the specified format the given parsed annotations.
+
+        :param list parsed_anns: A list of parsed annotations in the format
+         given by :meth:`Processor._parse_annotations`.
+        :param str ann_format: Format to render the annotations. Supported
+         formats are 'rest' and 'markdown'.
+        :param dict renderer_opts: Options to be passed to the renderer.
+        """
+
         # Get renderer
         renderers = {
             'markdown' : self._render_markdown,
@@ -242,7 +276,10 @@ class Processor(object):
     def _generate_prefix(self, lenght=10):
         """
         Generates a random hash to be used as prefix.
+
+        :param int lenght: Size to cut the hash.
         """
+
         the_hash = sha1()
         the_hash.update(str(random()))
         return the_hash.hexdigest()[:lenght]
@@ -252,6 +289,27 @@ class Processor(object):
             codefn=None, ann_format='rest',
             prefix=None, codestyle='monokai',
             renderer_opts=None):
+        """
+        Main processing function.
+
+        :param str code: Code to be highlighted.
+        :param str annotations: Text with annotations.
+        :param str codefn: Optional "CodeFileName" that can be used to better
+         detect the programming language in code.
+        :param str ann_format: Format of the annotations. Supported formats are
+         ``'rest'`` and ``'markdown'``.
+        :param str prefix: Prefix to be used to identify this block
+         (code - annotations pair). The prefix allows multiples blocks to be
+         included in the same web page without interfering with each other. If
+         ``None`` is given, a random prefix will be generated.
+        :param str codestyle: Pygments style to be used for syntax highlight.
+         See http://pygments.org/docs/styles/
+        :param dict renderer_opts: Dictionary with keyword options to be passed
+         to the renderer. For Markdown, this dictionary is passed to the
+         ``markdown.markdown`` function as ``**kwargs``. For reStructuredText
+         this dictionary is passed to the ``settings_overrides`` argument of
+         the ``docutils.code.publish_parts`` function.
+        """
 
         if renderer_opts is None:
             renderer_opts = {}
@@ -294,6 +352,16 @@ class Processor(object):
         }
 
     def process_files(self, codefn, annfn, **kwargs):
+        """
+        Process and interpret given code file name and annotations file name.
+
+        :param str codefn: Path to the code file.
+        :param str annfn: Path to the annotations file.
+        :param dict kwargs: Except for ``codefn`` (with is automatically set),
+         this method supports all the other arguments
+         :meth:`Processor.process`` supports.
+        """
+
         # Warning: might raise IO exceptions
         with open(codefn, 'r') as cf:
             code = cf.read()
@@ -304,6 +372,22 @@ class Processor(object):
     def create_document(
             self, codefn, annfn,
             title='', tpl=None, out_file=None, **kwargs):
+        """
+
+        The full content of the document is always returned.
+
+        :param str codefn: Path to the code file.
+        :param str annfn: Path to the annotations file.
+        :param str title: Title of the document.
+        :param str tpl: Python template string to be used a template for the
+         document. See ``codeco.processor.default_tpl`` for an example. If
+         ``None`` is given, the ``default_tpl`` will be used.
+        :param str out_file: Optional path for the output file. If given, the
+         file will be created or overriden with the content of the document.
+        :param dict kwargs: Except for ``codefn`` (with is automatically set),
+         this method supports all the other arguments
+         :meth:`Processor.process`` supports.
+        """
 
         processed = self.process_files(codefn, annfn, **kwargs)
 
