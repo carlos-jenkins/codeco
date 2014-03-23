@@ -211,36 +211,6 @@ class Processor(object):
         the_hash.update(str(random()))
         return the_hash.hexdigest()[:lenght]
 
-    def create_document(
-            self, codefn, annfn,
-            title='', tpl=None, out_file=None, **kwargs):
-
-        processed = self.process_files(codefn, annfn, **kwargs)
-
-        # Add title and join annotations
-        processed['title'] = title
-        processed['annotations'] = \
-            '\n'.join(processed['annotations'])
-
-        if tpl is None:
-            tpl = default_tpl
-        document = tpl.format(**processed)
-
-        # Warning: might raise IO exceptions
-        if out_file is not None:
-            with open(out_file, 'w') as of:
-                of.write(document)
-
-        return document
-
-    def process_files(self, codefn, annfn, **kwargs):
-        # Warning: might raise IO exceptions
-        with open(codefn, 'r') as cf:
-            code = cf.read()
-        with open(annfn, 'r') as af:
-            annotations = af.read()
-        return self.process(code, annotations, codefn=codefn, **kwargs)
-
     def process(
             self, code, annotations,
             codefn=None, ann_format='rest',
@@ -286,3 +256,33 @@ class Processor(object):
             'annotations' : rendered_anns,
             'code'        : highlighted,
         }
+
+    def process_files(self, codefn, annfn, **kwargs):
+        # Warning: might raise IO exceptions
+        with open(codefn, 'r') as cf:
+            code = cf.read()
+        with open(annfn, 'r') as af:
+            annotations = af.read()
+        return self.process(code, annotations, codefn=codefn, **kwargs)
+
+    def create_document(
+            self, codefn, annfn,
+            title='', tpl=None, out_file=None, **kwargs):
+
+        processed = self.process_files(codefn, annfn, **kwargs)
+
+        # Add title and join annotations
+        processed['title'] = title
+        processed['annotations'] = \
+            '\n'.join(processed['annotations'])
+
+        if tpl is None:
+            tpl = default_tpl
+        document = tpl.format(**processed)
+
+        # Warning: might raise IO exceptions
+        if out_file is not None:
+            with open(out_file, 'w') as of:
+                of.write(document)
+
+        return document
