@@ -136,7 +136,8 @@ $(window).load(function () {
 
 class Processor(object):
 
-    ann_regex = r'^<\[annotation\]> *?(?P<args>[0-9\[\] ]+)? *?$'
+    ann_regex = \
+        r'^<\[annotation\]> *?(?P<args>[0-9]+(\[[0-9]+,[0-9]+\])?)? *?$'
     ann_re = re.compile(ann_regex)
 
     def _parse_annotations(self, annotations, prefix):
