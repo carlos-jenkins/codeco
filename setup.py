@@ -18,5 +18,10 @@ setup(
     setup_requires=[
         'flake8'
     ],
-    install_requires=['pygments>=1.6', 'markdown'],
+    install_requires=[
+        'pygments>=1.6',
+        'markdown',
+        'docutils',
+        'beautifulsoup4'
+    ],
 )
