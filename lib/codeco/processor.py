@@ -170,6 +170,37 @@ class Processor(object):
 
         return rendered_anns
 
+    def _parse_annotations(self, annotations, prefix):
+        current = None
+        buff = []
+        parsed_anns = []
+
+        for line in annotations.splitlines():
+            m = Processor.ann_re.match(line)
+            if not m:
+                buff.append(line)
+                continue
+
+            if current is not None:
+                parsed_anns.append(
+                    (current, '\n'.join(buff))
+                )
+            current = {
+                'args' : None,
+                'prefix' : prefix
+            }
+            args = m.groupdict()['args']
+            if args is not None:
+                current['args'] = args.strip().split(' ')
+            buff = []
+
+        if buff:
+            parsed_anns.append(
+                (current, '\n'.join(buff))
+            )
+
+        return parsed_anns
+
     def create_document(
             self, codefn, annfn,
             title='', tpl=None, out_file=None, **kwargs):
@@ -217,32 +248,9 @@ class Processor(object):
             lexer = lexers.guess_lexer_for_filename(codefn, code)
 
         # Parse annotations
-        current = None
-        buff = []
-        parsed_anns = []
-
-        for line in annotations.splitlines():
-            m = Processor.ann_re.match(line)
-            if not m:
-                buff.append(line)
-                continue
-
-            if current is not None:
-                parsed_anns.append(
-                    (current, '\n'.join(buff))
-                )
-            current = {
-                'args' : None, 'prefix' : prefix
-            }
-            args = m.groupdict()['args']
-            if args is not None:
-                current['args'] = args.strip().split(' ')
-            buff = []
-
-        if buff:
-            parsed_anns.append(
-                (current, '\n'.join(buff))
-            )
+        parsed_anns = self._parse_annotations(
+            annotations, prefix
+        )
 
         # Render annotations
         rendered_anns = self._render(
