@@ -19,6 +19,8 @@ Main processing module.
 
 import re
 from json import dumps
+from random import random
+from hashlib import sha1
 
 from pygments import lexers, highlight, formatters
 from markdown import markdown
@@ -201,6 +203,14 @@ class Processor(object):
 
         return parsed_anns
 
+    def _generate_prefix(self, lenght=10):
+        """
+        Generates a random hash to be used as prefix.
+        """
+        the_hash = sha1()
+        the_hash.update(str(random()))
+        return the_hash.hexdigest()[:lenght]
+
     def create_document(
             self, codefn, annfn,
             title='', tpl=None, out_file=None, **kwargs):
@@ -234,11 +244,13 @@ class Processor(object):
     def process(
             self, code, annotations,
             codefn=None, ann_format='rest',
-            prefix='', codestyle='monokai',
+            prefix=None, codestyle='monokai',
             renderer_opts=None):
 
         if renderer_opts is None:
             renderer_opts = {}
+        if prefix is None:
+            prefix = self._generate_prefix()
 
         # Guess programming language
         # Warning: might raise pygments.util.ClassNotFound
