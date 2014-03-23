@@ -23,6 +23,7 @@ from json import dumps
 from pygments import lexers, highlight, formatters
 from markdown import markdown
 from docutils.core import publish_parts
+#from bs4 import BeautifulSoup
 
 
 default_tpl = """\
@@ -46,14 +47,14 @@ default_tpl = """\
         background-color: white;
     }}
     #two-columns {{
-        width: 80%;
-        margin: 0 auto;
     }}
     #left-col {{
         float: left;
+        width: 50%;
     }}
     #right-col {{
         float: left;
+        width: 49%;
     }}
     .no-float {{
         clear: both;
@@ -61,6 +62,10 @@ default_tpl = """\
     .annotations {{
         padding: 5px 20px 10px 20px;
         font-family: DejaVu Sans, Verdana, sans-serif;
+    }}
+    table.highlighttable {{
+        width: 100%;
+        padding: 0px 10px;
     }}
     </style>
 
@@ -122,12 +127,12 @@ class Processor(object):
     ann_regex = r'^<\[annotation\]> *?(?P<args>[0-9\[\] ]+)? *?$'
     ann_re = re.compile(ann_regex)
 
-    def render_markdown(self, body, **kwargs):
+    def _render_markdown(self, body, **kwargs):
         # Same as Pygments
         kwargs['output_format'] = 'html4'
         return markdown(body, **kwargs)
 
-    def render_rest(self, body, **kwargs):
+    def _render_rest(self, body, **kwargs):
         overrides = {
             'doctitle_xform': False,
             'initial_header_level': 1
@@ -140,12 +145,41 @@ class Processor(object):
         )
         return parts['body']
 
+    def _render(self, parsed_anns, ann_format, renderer_opts):
+        renderers = {
+            'markdown' : self._render_markdown,
+            'rest'     : self._render_rest,
+        }
+        renderer = renderers[ann_format]
+
+        rendered_anns = ['<div class="annotations">']
+        for meta, body in parsed_anns:
+
+            render = '\n'.join([
+                '<div class="annotation">',
+                '<span style="display: none;" class="data">{}</span>'.format(
+                    dumps(meta)
+                ),
+                '<div class="annotation_body">',
+                renderer(body, **renderer_opts),
+                '</div>',
+                '</div>',
+            ])
+            rendered_anns.append(render)
+        rendered_anns.append('</div>')
+
+        return rendered_anns
+
     def create_document(
             self, codefn, annfn,
             title='', tpl=None, out_file=None, **kwargs):
 
         processed = self.process_files(codefn, annfn, **kwargs)
+
+        # Add title and join annotations
         processed['title'] = title
+        processed['annotations'] = \
+            '\n'.join(processed['annotations'])
 
         if tpl is None:
             tpl = default_tpl
@@ -197,7 +231,9 @@ class Processor(object):
                 parsed_anns.append(
                     (current, '\n'.join(buff))
                 )
-            current = {'args' : None}
+            current = {
+                'args' : None, 'prefix' : prefix
+            }
             args = m.groupdict()['args']
             if args is not None:
                 current['args'] = args.strip().split(' ')
@@ -209,27 +245,9 @@ class Processor(object):
             )
 
         # Render annotations
-        renderers = {
-            'markdown' : self.render_markdown,
-            'rest'     : self.render_rest,
-        }
-        renderer = renderers[ann_format]
-
-        rendered_anns = ['<div class="annotations">']
-        for meta, body in parsed_anns:
-            meta['prefix'] = prefix
-            render = '\n'.join([
-                '<div class="annotation">',
-                '<span style="display: none;" class="data">{}</span>'.format(
-                    dumps(meta)
-                ),
-                '<div class="annotation_body">',
-                renderer(body, **renderer_opts),
-                '</div>',
-                '</div>',
-            ])
-            rendered_anns.append(render)
-        rendered_anns.append('</div>')
+        rendered_anns = self._render(
+            parsed_anns, ann_format, renderer_opts
+        )
 
         # Highlight code
         options = {
@@ -245,6 +263,6 @@ class Processor(object):
         return {
             'style'       : style,
             'script'      : interact_script,
-            'annotations' : '\n'.join(rendered_anns),
+            'annotations' : rendered_anns,
             'code'        : highlighted,
         }

@@ -5,7 +5,7 @@ from codeco.processor import Processor
 proc = Processor()
 proc.create_document(
     'source.sh', 'annotations.rst',
-    out_file='ex2.html', ann_format='markdown',
+    out_file='ex2.html', ann_format='rest',
     renderer_opts={
         'initial_header_level' : 4
     }
