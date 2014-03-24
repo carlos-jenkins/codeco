@@ -138,7 +138,7 @@ $(window).load(function () {
 
             // Highlight characters
             if (!adding) {
-                line.children('.hll-char').contents().unwrap();
+                line.find('.hll-char').contents().unwrap();
                 continue;
             }
 

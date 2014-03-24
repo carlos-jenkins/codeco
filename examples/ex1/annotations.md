@@ -2,7 +2,7 @@
 
 This is the first annotation.
 
-<[annotation]> 5 10
+<[annotation]> 5 10[14,20]
 
 This is the second annotation.
 
