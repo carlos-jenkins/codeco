@@ -41,29 +41,25 @@ default_tpl = """\
         padding: 10px;
         background-color: lightsteelblue;
     }}
-    #wrapper {{
+    div#wrapper {{
         border: 1px solid lightgray;
         width: 80%;
         margin: auto;
         padding: 10px 20px;
         background-color: white;
     }}
-    #two-columns {{
-    }}
-    #left-col {{
-        float: left;
-        width: 50%;
-    }}
-    #right-col {{
-        float: left;
-        width: 49%;
-    }}
-    .no-float {{
-        clear: both;
-    }}
-    .annotations {{
+    div.annotations {{
         padding: 5px 20px 10px 20px;
         font-family: DejaVu Sans, Verdana, sans-serif;
+    }}
+    table.two-columns {{
+        width: 100%;
+        margin: 0 auto;
+    }}
+    table.two-columns td.left {{
+        width: 50%;
+    }}
+    table.two-columns td.right {{
     }}
     table.highlighttable {{
         width: 100%;
@@ -82,17 +78,14 @@ default_tpl = """\
 </head>
 <body>
 <div id="wrapper">
-    <div id="two-columns">
-        <div id="left-col">
-            <div class="annotations">
-                {annotations}
-            </div>
-        </div>
-        <div id="right-col">
-            {code}
-        </div>
-    </div>
-    <div class="no-float"></div>
+
+    <table class="two-columns">
+        <tr>
+            <td class="left">{annotations}</td>
+            <td class="right">{code}</td>
+        </tr>
+    </table>
+
 </div>
 </body>
 </html>
