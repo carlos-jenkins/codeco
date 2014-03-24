@@ -350,7 +350,7 @@ class Processor(object):
             """
             if not isinstance(elem, Tag):
                 return False
-            if 'class' in elem:
+            if 'class' in elem.attrs:
                 elem.attrs['class'] += [html_class]
             else:
                 elem.attrs['class'] = html_class
@@ -374,6 +374,8 @@ class Processor(object):
                 for elem in elements:
                     wrapper.append(elem)
             add_class(wrapper, 'annotation_body')
+            if meta['hide']:
+                add_class(wrapper, 'annotation_hidden')
 
             for child in wrapper.children:
                 if add_class(child, 'annotation_title'):
