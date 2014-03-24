@@ -200,7 +200,7 @@ class Processor(object):
     Regular expression used to find annotations.
     """
     ann_regex = \
-        r'^<\[annotation\]>(?P<args>[0-9, \[\]]+)? *?$'
+        r'^<\[(?P<hidden>hidden-)?annotation\]>(?P<args>[0-9, \[\]]+)? *?$'
     ann_re = re.compile(ann_regex)
 
     args_regex = \
@@ -271,14 +271,23 @@ class Processor(object):
                 parsed_anns.append(
                     (current, '\n'.join(buff))
                 )
+
             current = {
                 'args' : None,
                 'prefix' : prefix,
-                'hide' : True,  # XXX Make it a parameter
+                'hide' : False,
             }
-            args = m.groupdict()['args']
+            groups = m.groupdict()
+
+            args = groups['args']
             if args is not None:
                 current['args'] = self._parse_args(args, num)
+
+            hidden = groups['hidden']
+            if hidden is not None:
+                current['hide'] = True
+
+            # Reset buffer
             buff = []
 
         if buff:

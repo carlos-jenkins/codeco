@@ -1,4 +1,4 @@
-<[annotation]> 1
+<[hidden-annotation]> 1
 
 1. Install ``pip``
 ==================
