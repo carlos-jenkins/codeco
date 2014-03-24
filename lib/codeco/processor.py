@@ -120,29 +120,85 @@ $(window).load(function () {
         }
     });
 
-    function show_annotation() {
-        $(this).toggleClass('hover');
-        var meta = jQuery.parseJSON($(this).siblings('.data').text());
+    function show_annotation(ann_body, adding) {
+
+        ann_body.toggleClass('hover');
+
+        // Display line if required.
+        var meta = jQuery.parseJSON(ann_body.siblings('.data').text());
         if (meta.hide) {
-            $(this).children('*:not(.annotation_title)').slideToggle(speed);
+            ann_body.children('*:not(.annotation_title)').slideToggle(speed);
         }
-        if (meta.args != null) {
-            for (var i = 0; i < meta.args.length; i++) {
-                var arg = meta.args[i];
-                var line = $('#' + meta.prefix + 'line-' + arg.line);
-                if (arg.beg == null) {
-                    line.toggleClass(
-                        'hll hll-line'
+
+        if (meta.args == null) {
+            return;
+        }
+
+        for (var i = 0; i < meta.args.length; i++) {
+
+            var arg = meta.args[i];
+            var line = $('#' + meta.prefix + 'line-' + arg.line);
+
+            // Highlight line
+            if (arg.beg == null || arg.end == null) {
+                line.toggleClass('hll hll-line');
+                continue;
+            }
+
+            // Highlight characters
+            if (!adding) {
+                line.children('.hll-char').contents().unwrap();
+                continue;
+            }
+
+            var html = line.html();
+            var in_tag = false;
+            var buff = [];
+            var codej = 0;
+
+            for (var j = 0; j < html.length; j++) {
+
+                var char = html.charAt(j);
+
+                if (in_tag) {
+                    if (char == '>') {
+                        in_tag = false;
+                    }
+                    buff.push(char);
+                    continue;
+                }
+
+                if (!in_tag && char == '<') {
+                    in_tag = true;
+                    buff.push(char);
+                    continue;
+                }
+
+                if (codej >= arg.beg && codej <= arg.end) {
+                    buff.push(
+                        '<span class="hll hll-char">' +
+                        char +
+                        '</span>'
                     );
                 } else {
-                    // FIXME Implement characters highlight.
-                    alert(arg.beg + '->' + arg.end);
+                    buff.push(char);
                 }
+                codej++;
             }
+            line.html(buff.join(''));
+            line.addClass('hll-chars');
         }
+
     }
 
-    $('div.annotation_body').hover(show_annotation, show_annotation);
+    $('div.annotation_body').hover(
+        function () {
+            show_annotation($(this), true);
+        },
+        function () {
+            show_annotation($(this), false);
+        }
+    );
 });
 """
 
@@ -330,16 +386,16 @@ class Processor(object):
 
         return rendered_anns
 
-    def _generate_prefix(self, lenght=10):
+    def _generate_prefix(self, length=10):
         """
         Generates a random hash to be used as prefix.
 
-        :param int lenght: Size to cut the hash.
+        :param int length: Size to cut the hash.
         """
 
         the_hash = sha1()
         the_hash.update(str(random()))
-        return the_hash.hexdigest()[:lenght]
+        return the_hash.hexdigest()[:length]
 
     def process(
             self, code, annotations,
