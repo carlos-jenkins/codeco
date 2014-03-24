@@ -39,10 +39,8 @@ default_tpl = """\
     body {{
         margin: 0;
         padding: 10px;
-        background-color: lightsteelblue;
     }}
     div#wrapper {{
-        border: 1px solid lightgray;
         width: 80%;
         margin: auto;
         padding: 10px 20px;
