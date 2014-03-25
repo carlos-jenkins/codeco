@@ -353,7 +353,7 @@ class Processor(object):
             if 'class' in elem.attrs:
                 elem.attrs['class'] += [html_class]
             else:
-                elem.attrs['class'] = html_class
+                elem.attrs['class'] = [html_class]
             return True
 
         # Render annotations
