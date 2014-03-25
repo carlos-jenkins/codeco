@@ -67,7 +67,7 @@ default_tpl = """\
     </style>
 
     <style type="text/css">
-    {style}
+    {styles}
     </style>
 
     <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
@@ -457,11 +457,13 @@ class Processor(object):
         }
         formatter = formatters.HtmlFormatter(**options)
         highlighted = highlight(code, lexer, formatter)
-        style = formatter.get_style_defs('table.highlighttable') + \
-            '\ntable.highlighttable .hll-line { display: block; }'
+        styles = [
+            formatter.get_style_defs('table.highlighttable'),
+            'table.highlighttable .hll-line { display: block; }'
+        ]
 
         return {
-            'style'       : style,
+            'styles'      : styles,
             'script'      : interact_script,
             'annotations' : rendered_anns,
             'code'        : highlighted,
@@ -509,8 +511,8 @@ class Processor(object):
 
         # Add title and join annotations
         processed['title'] = title
-        processed['annotations'] = \
-            '\n'.join(processed['annotations'])
+        processed['annotations'] = '\n'.join(processed['annotations'])
+        processed['styles'] = '\n'.join(processed['styles'])
 
         if tpl is None:
             tpl = default_tpl
