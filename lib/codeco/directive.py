@@ -103,7 +103,7 @@ def visit_codeco_node(self, node):
     build_dir = join(
         self.builder.outdir, html_static_path[0]  # First index, are you sure?
     )
-    ensuredir(dirname(build_dir))
+    ensuredir(build_dir)
 
     with open(join(build_dir, 'codeco.css'), 'w') as css:
         css.write(d['styles'][-1])  # Only extras, are you sure?
