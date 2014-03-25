@@ -92,11 +92,23 @@ def visit_codeco_node(self, node):
     )
     self.body.append(document)
 
+    # Create stylesheet and script
+    # XXX This will re-create, and is currently in a bad place.
+    with open('codeco.css', 'w') as css:
+        css.write('\n'.join(p['styles']))
+    with open('codeco.js', 'w') as js:
+        js.write(p['script'])
+
     raise nodes.SkipNode
 
 
 def depart_codeco_node(self, node):
     pass
+
+
+def builder_inited(app):
+    app.add_stylesheet('codeco.css')
+    app.add_javascript('codeco.js')
 
 
 def setup(app):
@@ -110,3 +122,5 @@ def setup(app):
     )
 
     app.add_directive('annotated-code', CodecoDirective)
+
+    app.connect('builder-inited', builder_inited)
