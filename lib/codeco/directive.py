@@ -78,11 +78,11 @@ directive_tpl = """\
 
 
 def visit_codeco_node(self, node):
-
-    processed = node.codeco_dict
-    processed['annotations'] = \
-        '\n'.join(processed['annotations'])
-    document = directive_tpl.format(**processed)
+    p = node.codeco_dict
+    document = directive_tpl.format(
+        annotations='\n'.join(p['annotations']),
+        code=p['code']
+    )
     self.body.append(document)
     raise nodes.SkipNode
 
