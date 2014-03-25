@@ -80,11 +80,18 @@ directive_tpl = """\
 
 def visit_codeco_node(self, node):
     p = node.codeco_dict
+    codestyle = getattr(
+        self.settings.env.config, 'pygments_style', None
+    )
+
+    # Add segment to body
     document = directive_tpl.format(
         annotations='\n'.join(p['annotations']),
-        code=p['code']
+        code=p['code'],
+        codestyle=codestyle,
     )
     self.body.append(document)
+
     raise nodes.SkipNode
 
 
