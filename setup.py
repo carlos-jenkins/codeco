@@ -6,10 +6,13 @@ from setuptools import setup
 setup(
     name='codeco',
     version='1.0',
-    description='Universal code annotator Pygments and reStructuredText.',
+    description=(
+        'Universal code annotator using Pygments '
+        'and reStructuredText or Markdown.'
+    ),
     author='Carlos Jenkins',
     author_email='carlos@jenkins.co.cr',
-    url='http://codeco.readthedocs.org/',
+    url='https://github.com/carlos-jenkins/codeco',
     packages=['codeco'],
     package_dir={'': 'lib'},
     classifiers=[
