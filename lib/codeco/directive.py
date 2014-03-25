@@ -19,9 +19,11 @@ Directive for Sphinx document system.
 """
 
 import re
+from os.path import join, dirname
 
 from docutils import nodes
 from sphinx.util.compat import Directive
+from sphinx.util.osutil import ensuredir
 
 from codeco.processor import Processor
 
@@ -79,25 +81,31 @@ directive_tpl = """\
 
 
 def visit_codeco_node(self, node):
-    p = node.codeco_dict
+    # Get variables
+    d = node.codeco_dict
     codestyle = getattr(
         self.settings.env.config, 'pygments_style', None
     )
 
     # Add segment to body
     document = directive_tpl.format(
-        annotations='\n'.join(p['annotations']),
-        code=p['code'],
+        annotations='\n'.join(d['annotations']),
+        code=d['code'],
         codestyle=codestyle,
     )
     self.body.append(document)
 
-    # Create stylesheet and script
-    # XXX This will re-create, and is currently in a bad place.
-    with open('codeco.css', 'w') as css:
-        css.write('\n'.join(p['styles']))
-    with open('codeco.js', 'w') as js:
-        js.write(p['script'])
+    # Create style and script files
+    html_static_path = getattr(
+        self.settings.env.config, 'html_static_path', ['_static']
+    )
+    build_dir = join(self.builder.outdir, html_static_path[0])  # 0, sure?
+    ensuredir(dirname(build_dir))
+
+    with open(join(build_dir, 'codeco.css'), 'w') as css:
+        css.write('\n'.join(d['styles']))
+    with open(join(build_dir, 'codeco.js'), 'w') as js:
+        js.write(d['script'])
 
     raise nodes.SkipNode
 
