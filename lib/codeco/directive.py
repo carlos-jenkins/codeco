@@ -96,14 +96,17 @@ def visit_codeco_node(self, node):
     self.body.append(document)
 
     # Create style and script files
+    # XXX This will recreate the file again and again. I accept better ideas :S
     html_static_path = getattr(
         self.settings.env.config, 'html_static_path', ['_static']
     )
-    build_dir = join(self.builder.outdir, html_static_path[0])  # 0, sure?
+    build_dir = join(
+        self.builder.outdir, html_static_path[0]  # First index, are you sure?
+    )
     ensuredir(dirname(build_dir))
 
     with open(join(build_dir, 'codeco.css'), 'w') as css:
-        css.write('\n'.join(d['styles']))
+        css.write(d['styles'][-1])  # Only extras, are you sure?
     with open(join(build_dir, 'codeco.js'), 'w') as js:
         js.write(d['script'])
 

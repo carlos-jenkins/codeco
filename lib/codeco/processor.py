@@ -99,6 +99,20 @@ annotation_tpl = """\
 """
 
 
+extra_styles = """\
+table.highlighttable .hll-line,
+table.highlighttable .hll-char {
+   border: none;
+   padding: 0;
+   margin: 0;
+}
+
+table.highlighttable .hll-line {
+    display: block;
+}
+"""
+
+
 interact_script = """\
 $(window).load(function () {
 
@@ -459,7 +473,7 @@ class Processor(object):
         highlighted = highlight(code, lexer, formatter)
         styles = [
             formatter.get_style_defs('table.highlighttable'),
-            'table.highlighttable .hll-line { display: block; }'
+            extra_styles
         ]
 
         return {
