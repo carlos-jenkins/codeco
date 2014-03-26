@@ -26,6 +26,7 @@ setup(
         'pygments>=1.6',
         'markdown',
         'docutils',
-        'beautifulsoup4'
+        'beautifulsoup4',
+        'html5lib',
     ],
 )
