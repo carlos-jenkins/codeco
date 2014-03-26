@@ -19,7 +19,7 @@ Directive for Sphinx document system.
 """
 
 import re
-from os.path import join, dirname
+from os.path import join
 
 from docutils import nodes
 from sphinx.util.compat import Directive

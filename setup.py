@@ -12,7 +12,7 @@ setup(
     ),
     author='Carlos Jenkins',
     author_email='carlos@jenkins.co.cr',
-    url='https://github.com/carlos-jenkins/codeco',
+    url='http://codeco.readthedocs.org/',
     packages=['codeco'],
     package_dir={'': 'lib'},
     classifiers=[
