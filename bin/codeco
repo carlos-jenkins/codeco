@@ -19,34 +19,46 @@
 codeco command line application.
 """
 
-from argparse import ArgumentParser, ArgumentError
+from sys import exit
 from os.path import isfile, isdir
+from argparse import ArgumentParser, ArgumentError
+
+from codeco.processor import Processor, default_tpl
+
+
+files_ext_map = {
+    'rst' : 'rest',
+    'md' : 'markdown',
+    'txt' : 'markdown',
+    '' : 'markdown',
+}
 
 
 def input_file(path):
     """
-    'Type' for argparse - checks that file exists and open it for reading.
+    'Type' for argparse - checks that path is a file.
     """
     if not isfile(path):
         raise ArgumentError('{0} doesn\'t exist.'.format(path))
-    return open(path, 'r')
+    return path
 
 
 def output_file(path):
     """
-    'Type' for argparse - checks that file is not a directory and open it for
-    writing.
+    'Type' for argparse - checks that file is not a directory.
     """
     if isdir(path):
         raise ArgumentError('{0} is a directory.'.format(path))
-    return open(path, 'w')
+    return path
 
 
 def main():
+    # Create parser
     parser = ArgumentParser(
         description='codeco command line application.'
     )
 
+    # Define arguments
     parser.add_argument(
         'code', type=input_file,
         help='path to code file.',
@@ -71,8 +83,33 @@ def main():
         default=None,
     )
 
+    # Parse arguments
     args = parser.parse_args()
-    print(args)
+
+    # Handle arguments
+    #  Create template if requested
+    if args.create is not None:
+        with open(args.create, 'w') as f:
+            f.write(default_tpl)
+        exit(0)
+
+    #  Load template if available
+    template = None
+    if args.template is not None:
+        template = args.template.read()
+        args.template.close()
+
+    #  Create document
+    #  XXX Missing codestyle and title (prefix)
+    proc = Processor()
+    result = proc.create_document(
+        args.code, args.annotations,
+        title='', tpl=template, out_file=args.output,
+    )
+
+    #  Write output
+    if args.output is None:
+        print(result)
 
 
 if __name__ == '__main__':

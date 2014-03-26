@@ -22,6 +22,7 @@ import re
 from json import dumps
 from random import random
 from hashlib import sha1
+from os.path import splitext
 
 from pygments import lexers, highlight, formatters
 from markdown import markdown
@@ -207,6 +208,14 @@ $(window).load(function () {
     );
 });
 """
+
+
+files_ext_map = {
+    'rst' : 'rest',
+    'md'  : 'markdown',
+    'txt' : 'markdown',
+    ''    : 'markdown',
+}
 
 
 class Processor(object):
@@ -499,7 +508,15 @@ class Processor(object):
             code = cf.read()
         with open(annfn, 'r') as af:
             annotations = af.read()
-        return self.process(code, annotations, codefn=codefn, **kwargs)
+
+        # Determine type
+        fn, ext = splitext(annfn)
+        ann_format = files_ext_map[ext]
+
+        return self.process(
+            code, annotations,
+            codefn=codefn, ann_format=ann_format, **kwargs
+        )
 
     def create_document(
             self, codefn, annfn,
