@@ -378,7 +378,7 @@ class Processor(object):
             html = renderer(ann_body, **renderer_opts).strip()
 
             # Wrap rendered annotation
-            bs = BeautifulSoup(html)
+            bs = BeautifulSoup(html, 'html5lib')
             elements = bs.body.contents
             if len(elements) == 1 and elements[0].name == 'div':
                 # Already wrapped
