@@ -28,14 +28,6 @@ from pygments.styles import get_all_styles
 from codeco.processor import Processor, default_tpl
 
 
-files_ext_map = {
-    'rst' : 'rest',
-    'md' : 'markdown',
-    'txt' : 'markdown',
-    '' : 'markdown',
-}
-
-
 def input_file(path):
     """
     'Type' for argparse - checks that path is a file.
