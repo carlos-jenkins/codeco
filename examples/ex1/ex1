@@ -6,6 +6,6 @@ from codeco.processor import Processor
 proc = Processor()
 proc.create_document(
     'source.py', 'annotations.md',
-    out_file='ex1.html',
+    title='codeco example #1', out_file='ex1.html',
 )
 print('[DONE]')
