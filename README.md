@@ -3,23 +3,31 @@ codeco
 
 Universal code annotator using Pygments and reStructuredText or Markdown.
 
-Usage
------
+
+Installation
+------------
 
 For Python 2.7:
 
     sudo apt-get install python-pip
-    sudo pip install docutils markdown
+    sudo pip install codeco
 
 For Python 3:
 
     sudo apt-get install python3-pip
-    sudo pip3 install docutils markdown
+    sudo pip3 install codeco
 
 
 Documentation
 -------------
 
-    sudo pip install sphinx_rtd_theme
+User guide and API Reference can be found in:
+
+- http://codeco.readthedocs.org/
+
+
+To build it:
+
+    sudo pip install sphinx-bootstrap-theme
     cd doc/
-    PYTHONPATH=../lib/ make html
+    make html
