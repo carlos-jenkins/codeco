@@ -15,6 +15,7 @@ setup(
     url='http://codeco.readthedocs.org/',
     packages=['codeco'],
     package_dir={'': 'lib'},
+    scripts=['bin/codeco'],
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
     ],
