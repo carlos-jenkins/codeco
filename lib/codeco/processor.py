@@ -211,10 +211,10 @@ $(window).load(function () {
 
 
 files_ext_map = {
-    'rst' : 'rest',
-    'md'  : 'markdown',
-    'txt' : 'markdown',
-    ''    : 'markdown',
+    '.rst' : 'rest',
+    '.md'  : 'markdown',
+    '.txt' : 'markdown',
+    ''     : 'markdown',
 }
 
 
