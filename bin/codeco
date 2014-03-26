@@ -113,7 +113,6 @@ def main():
         args.template.close()
 
     #  Create document
-    #  XXX Missing codestyle and title (prefix)
     proc = Processor()
     result = proc.create_document(
         args.code, args.annotations,
