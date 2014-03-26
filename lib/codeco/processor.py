@@ -510,12 +510,13 @@ class Processor(object):
             annotations = af.read()
 
         # Determine type
-        fn, ext = splitext(annfn)
-        ann_format = files_ext_map[ext]
+        if 'ann_format' not in kwargs:
+            fn, ext = splitext(annfn)
+            kwargs['ann_format'] = files_ext_map[ext]
 
         return self.process(
             code, annotations,
-            codefn=codefn, ann_format=ann_format, **kwargs
+            codefn=codefn, **kwargs
         )
 
     def create_document(
