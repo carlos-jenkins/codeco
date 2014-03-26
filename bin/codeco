@@ -23,15 +23,6 @@ from argparse import ArgumentParser, ArgumentError
 from os.path import isfile, isdir
 
 
-help = """\
-[1]    Code file.
-[2]    Annotations file.
--o    Output file [Optional].
--t    Template file [Optional].
--c    Create a template file [Optional].
-"""
-
-
 def input_file(path):
     """
     'Type' for argparse - checks that file exists and open it for reading.
@@ -72,6 +63,11 @@ def main():
     parser.add_argument(
         '-t', '--template', type=input_file,
         help='path to template file.',
+        default=None,
+    )
+    parser.add_argument(
+        '-c', '--create', type=output_file,
+        help='create a template file.',
         default=None,
     )
 
