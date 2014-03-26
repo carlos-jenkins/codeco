@@ -23,6 +23,8 @@ from sys import exit
 from os.path import isfile, isdir
 from argparse import ArgumentParser, ArgumentError
 
+from pygments.styles import get_all_styles
+
 from codeco.processor import Processor, default_tpl
 
 
@@ -78,6 +80,17 @@ def main():
         default=None,
     )
     parser.add_argument(
+        '-d', '--title',
+        help='document title.',
+        default='',
+    )
+    parser.add_argument(
+        '-s', '--style',
+        help='syntax highlighting style.',
+        choices=sorted(get_all_styles()),
+        default='monokai',
+    )
+    parser.add_argument(
         '-c', '--create', type=output_file,
         help='create a template file.',
         default=None,
@@ -104,7 +117,8 @@ def main():
     proc = Processor()
     result = proc.create_document(
         args.code, args.annotations,
-        title='', tpl=template, out_file=args.output,
+        title=args.title, tpl=template,
+        out_file=args.output, codestyle=args.style,
     )
 
     #  Write output
