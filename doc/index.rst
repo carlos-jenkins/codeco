@@ -5,7 +5,6 @@
 ``codeco`` documentation
 ========================
 
-:Authors: Carlos Jenkins <carlos@jenkins.co.cr>
 :Revision: |date|
 
 .. contents:: Table of Contents
@@ -23,10 +22,10 @@ for syntax highlighting.
 
 ``codeco`` is inspired by previous works like `Pycco`_ and `Docco`_ with a
 paradigm shift and built around their limitations, like the inability to
-separate between documentation comments (annotations) and in-code
-comments[#f1]_, difficulty to support other programming languages, difficulty
-to support other markup formats and lack of integration with other
-documentation frameworks.
+separate between documentation comments (annotations) and in-code comments
+[#f1]_, difficulty to support other programming languages, difficulty to
+support other markup formats and lack of integration with other documentation
+frameworks.
 
 Nevertheless, ``codeco`` is not a an exact replacement of `Pycco`_. In
 ``codeco`` code annotations reside outside the code itself, and is referenced
@@ -38,7 +37,7 @@ changes. Someday this overhead could be minimized with automatic line
 synchronization for code changes, but we are not there yet.
 
 
-.. rubric:: Footnotes
+.. rubric:: Notes
 
 .. [#f1] In ``codeco`` you can, for example, keep comments on code and make
    annotations about them, or keep comments in a parseable language for
@@ -103,7 +102,7 @@ To install ``codeco``, simply execute:
 
    To install them manually:
 
-   .. sourcode:: bash
+   .. sourcecode:: bash
 
       pip install markdown docutils pygments beautifulsoup4 html5lib
 
@@ -120,7 +119,8 @@ Or, to install the latest source:
 
    <[annotation]> 1[10,54]
 
-   The source for ``codeco`` is available on `GitHub`_, and released under the
+   The source for ``codeco`` is available on
+   `GitHub <https://github.com/carlos-jenkins/codeco>`_, and released under the
    Apache 2 license.
 
 
@@ -134,6 +134,10 @@ If you install ``codeco``, you can run it from the command-line:
 
    codeco -h
 
+.. warning::
+
+   Work In Progress.
+
 
 .. _Sphinx: http://sphinx-doc.org/
 .. _Markdown: http://pythonhosted.org/Markdown/
@@ -144,4 +148,7 @@ If you install ``codeco``, you can run it from the command-line:
 .. _GitHub: https://github.com/carlos-jenkins/codeco
 
 
-* :ref:`genindex`
+.. General replacement tokens
+
+.. |date| date:: %B %d ,%Y
+.. |time| date:: %H:%M

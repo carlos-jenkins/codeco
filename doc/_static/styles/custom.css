@@ -79,3 +79,14 @@ h2, h3, h4, h5, h6, .h2, .h3, .h4, .h5, .h6 {
 .highlighttable .code pre {
     font-size: 14px !important;
 }
+
+/* Improve codeco formatting */
+table.two-columns {
+    width: 100%;
+    margin: 0 auto;
+}
+table.two-columns td.left {
+    width: 50%;
+}
+table.two-columns td.right {
+}
