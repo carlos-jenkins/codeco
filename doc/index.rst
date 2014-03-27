@@ -51,7 +51,7 @@ synchronization for code changes, but we are not there yet.
 Features
 ========
 
-- Annotations can highlight multiple lines, or only some chars in
+- Annotations can highlight multiple lines, or only some characters in
   those lines.
 - Interactive line highlighting using JQuery.
 - Annotations can be written in `Markdown`_ or `reStructuredText`_.
