@@ -29,5 +29,6 @@ setup(
         'docutils',
         'beautifulsoup4',
         'html5lib',
+        'mako',
     ],
 )

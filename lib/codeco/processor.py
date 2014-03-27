@@ -28,6 +28,7 @@ from pygments import lexers, highlight, formatters
 from markdown import markdown
 from docutils.core import publish_parts
 from bs4 import BeautifulSoup, Tag
+from mako.template import Template
 
 
 default_tpl = """\
@@ -543,12 +544,10 @@ class Processor(object):
 
         # Add title and join annotations
         processed['title'] = title
-        processed['annotations'] = '\n'.join(processed['annotations'])
-        processed['styles'] = '\n'.join(processed['styles'])
 
         if tpl is None:
             tpl = default_tpl
-        document = tpl.format(**processed)
+        document = Template(tpl).render(**processed)
 
         # Warning: might raise IO exceptions
         if out_file is not None:
