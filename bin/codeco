@@ -20,7 +20,7 @@ codeco command line application.
 """
 
 from sys import exit
-from os.path import isfile, isdir
+from os.path import isfile, isdir, dirname
 from argparse import ArgumentParser, ArgumentError
 
 from pygments.styles import get_all_styles
@@ -43,6 +43,11 @@ def output_file(path):
     """
     if isdir(path):
         raise ArgumentError('{0} is a directory.'.format(path))
+    directory = dirname(path)
+    if not isdir(directory):
+        raise ArgumentError(
+            'Parent directory {0} doesn\'t exists.'.format(directory)
+        )
     return path
 
 
