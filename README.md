@@ -43,3 +43,5 @@ TO DO
 - Add support for LaTeX and others writters in directive by falling back to
   a block of source code and a block of text.
 - Add some optional CSS style to distinguish hidden annotations.
+- Allow in directive to change column, if left or right.
+- Remove table as default template in directive and add style for divs.
