@@ -40,3 +40,5 @@ TO DO
   and the Sphinx environment.
 - Add support for the directive to include code files and annotations files
   via optional arguments.
+- Add support for LaTeX and others writters in directive by falling back to
+  a block of source code and a block of text.
