@@ -90,3 +90,17 @@ table.two-columns td.left {
 }
 table.two-columns td.right {
 }
+
+/* Improve general readability */
+p {
+    line-height: 1.7;
+    text-align: justify;
+}
+
+* {
+    font-family: "DejaVu Sans", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+ul.simple li {
+    margin: 5px 0px;
+}
