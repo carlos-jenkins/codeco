@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name='codeco',
-    version='1.3',
+    version='1.4',
     description=(
         'Universal code annotator using Pygments '
         'and reStructuredText or Markdown.'
