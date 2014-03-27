@@ -7,6 +7,10 @@
 
 :Revision: |date|
 
+.. warning::
+
+   Work In Progress.
+
 .. contents:: Table of Contents
    :local:
 
@@ -14,7 +18,7 @@
 What is ``codeco`` and what is not
 ==================================
 
-"codeco" is a Python universal code commenter that allows to generate
+``codeco`` is a Python universal code commenter that allows to generate
 annotations for a particular piece of code. It produces HTML that displays
 your annotations alongside your code. Annotations can be written in
 `Markdown`_ or `reStructuredText`_, while code is passed through `Pygments`_
@@ -47,10 +51,10 @@ synchronization for code changes, but we are not there yet.
 Features
 ========
 
-- Annotations can highlight multiples whole lines, or only some chars in
+- Annotations can highlight multiple lines, or only some chars in
   those lines.
 - Interactive line highlighting using JQuery.
-- Annotations can be written in Markdown or
+- Annotations can be written in `Markdown`_ or `reStructuredText`_.
 - Supports any programming language `Pygments`_ supports.
 - Can be used standalone, as a library or as a `Sphinx`_ directive.
 - Support for templates for HTML generation.
@@ -127,16 +131,16 @@ Or, to install the latest source:
 Usage
 =====
 
+``codeco`` can be used standalone, as a library or with `Sphinx`_.
+
+Standalone
+----------
 
 If you install ``codeco``, you can run it from the command-line:
 
 .. sourcecode:: bash
 
    codeco -h
-
-.. warning::
-
-   Work In Progress.
 
 
 .. _Sphinx: http://sphinx-doc.org/

@@ -31,3 +31,12 @@ To build it:
     sudo pip install sphinx-bootstrap-theme
     cd doc/
     make html
+
+
+TO DO
+-----
+
+- Fix directive to parse content in annotations connected to the document tree
+  and the Sphinx environment.
+- Add support for the directive to include code files and annotations files
+  via optional arguments.
